@@ -1,19 +1,22 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Route, Routes } from "react-router-dom"
 import { getInfo, getProposals, isWallectConnected } from "./Blockchain.services"
-import CreateProposal from "./components/CreateProposal"
 import Header from "./components/Header"
 import { useGlobalState } from "./store"
 import Home from "./views/Home"
 import Proposal from "./views/Proposal"
-import { ToastContainer } from 'react-toastify'
+import Alert from "./components/Alert"
+import Loading from "./components/Loading"
 
 const App = () => {
+  const [loaded, setLoaded] = useState(false)
+
   const [connectedAccount] = useGlobalState('connectedAccount')
   useEffect(async () => {
     await isWallectConnected()
     await getInfo()
     await getProposals()
+    setLoaded(true)
   }, [])
 
   useEffect(async () => {
@@ -26,22 +29,17 @@ const App = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 dark:bg-[#212936] dark:text-gray-300">
       <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/proposal/:id" element={<Proposal />} />
-      </Routes>
+      {loaded ? (
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/proposal/:id" element={<Proposal />} />
+        </Routes>
 
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      )
+        :
+        null}
+      <Loading />
+      <Alert />
     </div>
   )
 }

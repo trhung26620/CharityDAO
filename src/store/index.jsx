@@ -6,10 +6,25 @@ const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
     connectedAccount: '',
     contract: null,
     proposals: [],
-    isStackholder: false,
+    isStakeholder: false,
     balance: 0,
-    mybalance: 0
+    mybalance: 0,
+    loading: { show: false, msg: '' },
+    alert: { show: false, msg: '', color: '' },
 })
+
+const setAlert = (msg, color = 'green') => {
+    setGlobalState('loading', { show: false, msg: '' })
+    setGlobalState('alert', { show: true, msg, color })
+    setTimeout(() => {
+        setGlobalState('alert', { show: false, msg: '', color })
+    }, 2000)
+}
+
+const setLoadingMsg = (msg) => {
+    const loading = getGlobalState('loading')
+    setGlobalState('loading', { show: true, msg })
+}
 
 const truncate = (text, startChars, endChars, maxLength) => {
     if (text.length > maxLength) {
@@ -32,4 +47,7 @@ const daysRemaining = (days) => {
     return days == 0 || days == 1 ? days + ' day' : days + ' days'
 }
 
-export { setGlobalState, useGlobalState, getGlobalState, truncate, daysRemaining }
+export {
+    setGlobalState, useGlobalState, getGlobalState, truncate,
+    daysRemaining, setAlert, setLoadingMsg
+}

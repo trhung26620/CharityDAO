@@ -1,17 +1,12 @@
 import Identicon from 'react-identicons'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { truncate, useGlobalState, daysRemaining } from '../store'
-// import { payoutBeneficiary } from "../Blockchain.services";
-import { toast } from 'react-toastify'
+import { truncate, useGlobalState, daysRemaining, setLoadingMsg, setAlert } from '../store'
+import { payoutBeneficiary } from "../Blockchain.services";
 
 const Proposals = () => {
     const [data] = useGlobalState('proposals')
     const [proposals, setProposals] = useState(data)
-
-    useEffect(() => {
-        setProposals(data);
-    }, [data])
 
     const active = `bg-blue-600
     text-white font-medium text-xs leading-tight
@@ -42,6 +37,16 @@ const Proposals = () => {
                 (proposal) => new Date().getTime() > Number(proposal.duration + '000')
             )
         )
+
+    const handlePayout = async (id) => {
+        try {
+            setLoadingMsg('Transfering to beneficiary...')
+            await payoutBeneficiary(id)
+            setAlert("Beneficiary successfully Paid Out!")
+        } catch (error) {
+            setAlert("Transfer failed!", "red")
+        }
+    }
 
     return (
         <div className="flex flex-col p-8">
@@ -74,6 +79,12 @@ const Proposals = () => {
                         <table className="min-w-full">
                             <thead className="border-b dark:border-gray-500">
                                 <tr>
+                                    <th
+                                        scope="col"
+                                        className="text-sm font-medium px-6 py-4 text-left"
+                                    >
+                                        Created By
+                                    </th>
                                     <th
                                         scope="col"
                                         className="text-sm font-medium px-6 py-4 text-left"
@@ -113,6 +124,16 @@ const Proposals = () => {
                                                     size={25}
                                                     className="h-10 w-10 object-contain rounded-full mr-3"
                                                 />
+                                                <span>{truncate(proposal.proposer, 4, 4, 11)}</span>
+                                            </div>
+                                        </td>
+                                        <td className="text-sm font-light px-6 py-4 whitespace-nowrap">
+                                            <div className="flex flex-row justify-start items-center space-x-3">
+                                                <Identicon
+                                                    string={proposal.beneficiary.toLowerCase()}
+                                                    size={25}
+                                                    className="h-10 w-10 object-contain rounded-full mr-3"
+                                                />
                                                 <span>{truncate(proposal.beneficiary, 4, 4, 11)}</span>
                                             </div>
                                         </td>
@@ -133,49 +154,51 @@ const Proposals = () => {
                                                 className="dark:border rounded-full px-6 py-2.5 dark:border-blue-600
                           dark:text-blue-600 dark:bg-transparent font-medium text-xs leading-tight
                           uppercase hover:border-blue-700 focus:border-blue-700
-                          focus:outline-none focus:ring-0 active:border-blue-800
-                          transition duration-150 ease-in-out text-white bg-blue-600"
+                          focus:outline-none focus:ring-0 active:border-blue-800 hover:bg-blue-700
+                          transition duration-150 ease-in-out text-white bg-blue-600 dark:hover:text-blue-300"
                                             >
                                                 View
                                             </Link>
 
-                                            {/* {new Date().getTime() >
-                                            Number(proposal.duration + '000') ? (
-                                            proposal.upvotes > proposal.downvotes ? (
-                                                !proposal.paid ? ( */}
-                                            <button
-                                                className="dark:border rounded-full px-6 py-2.5 dark:border-red-600
-                                dark:text-red-600 dark:bg-transparent font-medium text-xs leading-tight
-                                uppercase hover:border-red-700 focus:border-red-700
-                                focus:outline-none focus:ring-0 active:border-red-800
-                                transition duration-150 ease-in-out text-white bg-red-600"
-                                            // onClick={() => handlePayout(proposal.id)}
-                                            >
-                                                Payout
-                                            </button>
-                                            {/* ) : ( */}
-                                            <button
-                                                className="dark:border rounded-full px-6 py-2.5 dark:border-green-600
+                                            {new Date().getTime() >
+                                                Number(proposal.duration + '000') ? (
+                                                proposal.upvotes > proposal.downvotes ? (
+                                                    !proposal.paid ? (
+                                                        <button
+                                                            className="dark:border rounded-full px-6 py-2.5 dark:border-orange-600
+                                                            dark:text-orange-600 dark:bg-transparent font-medium text-xs leading-tight
+                                                            uppercase hover:border-orange-700 focus:border-orange-700
+                                                            focus:outline-none focus:ring-0 active:border-orange-800
+                                                            transition duration-150 ease-in-out text-white bg-orange-600"
+                                                            onClick={() => handlePayout(proposal.id)}
+                                                        >
+                                                            Payout
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            className="dark:border rounded-full px-6 py-2.5 dark:border-green-600
                                   dark:text-green-600 dark:bg-transparent font-medium text-xs leading-tight
                                   uppercase hover:border-green-700 focus:border-green-700
                                   focus:outline-none focus:ring-0 active:border-green-800
                                   transition duration-150 ease-in-out text-white bg-green-600"
-                                            >
-                                                Paid
-                                            </button>
-                                            {/* ) */}
-                                            {/* ) : ( */}
-                                            <button
-                                                className="dark:border rounded-full px-6 py-2.5 dark:border-red-600
+                                                        >
+                                                            Paid
+                                                        </button>
+                                                    )
+                                                )
+                                                    :
+                                                    (
+                                                        <button
+                                                            className="dark:border rounded-full px-6 py-2.5 dark:border-red-600
                                   dark:text-red-600 dark:bg-transparent font-medium text-xs leading-tight
                                   uppercase hover:border-red-700 focus:border-red-700
                                   focus:outline-none focus:ring-0 active:border-red-800
                                   transition duration-150 ease-in-out text-white bg-red-600"
-                                            >
-                                                Rejected
-                                            </button>
-                                            {/* ) */}
-                                            {/* ) : null} */}
+                                                        >
+                                                            Rejected
+                                                        </button>
+                                                    )
+                                            ) : null}
                                         </td>
                                     </tr>
                                 ))}

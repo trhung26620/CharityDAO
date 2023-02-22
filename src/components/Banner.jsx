@@ -1,26 +1,36 @@
 import React, { useState } from 'react'
-import { toast } from 'react-toastify'
 import { performContribute } from '../Blockchain.services'
-import { setGlobalState, useGlobalState } from '../store'
+import { setAlert, setGlobalState, setLoadingMsg, useGlobalState } from '../store'
 
 
 const Banner = () => {
     const [amount, setAmount] = useState('')
-    const [isStackholder] = useGlobalState('isStackholder')
+    const [proposals] = useGlobalState('proposals')
+    const [isStakeholder] = useGlobalState('isStakeholder')
     const [balance] = useGlobalState('balance')
     const [mybalance] = useGlobalState('mybalance')
 
     const onContribute = async () => {
-        if (!amount || amount == '') return
-        await performContribute(amount)
-        toast.success('Contribution received')
-        setAmount('')
+        try {
+            if (!amount || amount == '') return
+            setLoadingMsg('Contributing...')
+            await performContribute(amount)
+            setAlert("Contribution received")
+            setAmount('')
+        } catch (error) {
+            setAlert("Contributing error", "red")
+        }
     }
+
+    const opened = () =>
+        proposals.filter(
+            (proposal) => new Date().getTime() < Number(proposal.duration + '000'),
+        ).length
 
     return (
         <div className="p-8">
             <h2 className="font-semibold text-3xl mb-5">
-                {5} Proposals Currently Opened
+                {opened()} Proposals Currently Opened
             </h2>
             <p>
                 Current DAO Balance: {' '}
@@ -28,12 +38,12 @@ const Banner = () => {
                 Your Contributions: {' '}
                 <span>
                     <strong>{mybalance} ETH</strong>
-                    {isStackholder ? ', and you are now a stakerholder' : null}
+                    {isStakeholder ? ', and you are now a stakerholder' : null}
                 </span>
             </p>
             <hr className="my-6 border-gray-300 dark:border-gray-500" />
             <p>
-                {isStackholder ?
+                {isStakeholder ?
                     'You can now raise proposals on this platform' :
                     'Hey, when you contribute up to 1 ETH you become a stakeholder'
                 }
@@ -70,7 +80,7 @@ const Banner = () => {
                 >
                     Contribute
                 </button>
-                {isStackholder ? (
+                {isStakeholder ? (
                     <button
                         type="button"
                         className={`inline-block px-6 py-2.5

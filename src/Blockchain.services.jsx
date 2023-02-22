@@ -89,16 +89,11 @@ const getInfo = async () => {
             .call({ from: connectedAccount })
         setGlobalState('balance', window.web3.utils.fromWei(balance))
         setGlobalState('mybalance', window.web3.utils.fromWei(mybalance))
-        setGlobalState('isStackholder', isStakeholder)
+        setGlobalState('isStakeholder', isStakeholder)
 
     } catch (error) {
         reportError(error)
     }
-}
-
-const reportError = (error) => {
-    console.log(JSON.stringify(error), 'red')
-    throw new Error('No ethereum object.')
 }
 
 const raiseProposal = async ({ title, description, beneficiary, amount }) => {
@@ -149,6 +144,55 @@ const structuredProposals = (proposals) => {
         .reverse()
 }
 
+const getProposal = async (id) => {
+    try {
+        const proposals = getGlobalState('proposals')
+        return proposals.find((proposal) => proposal.id == id)
+    } catch (error) {
+        reportError(error)
+    }
+}
+
+const voteOnProposal = async (proposalId, supported) => {
+    try {
+        const contract = await getEtheriumContract()
+        const account = getGlobalState('connectedAccount')
+        await contract.methods
+            .performVote(proposalId, supported)
+            .send({ from: account })
+
+        window.location.reload()
+    } catch (error) {
+        reportError(error)
+    }
+}
+
+const listVoters = async (id) => {
+    try {
+        const contract = await getEtheriumContract()
+        const votes = await contract.methods.getVotesOf(id).call()
+        return votes
+    } catch (error) {
+        reportError(error)
+    }
+}
+
+const payoutBeneficiary = async (id) => {
+    try {
+        const contract = await getEtheriumContract()
+        const account = getGlobalState('connectedAccount')
+        await contract.methods.payBeneficiary(id).send({ from: account })
+        window.location.reload()
+    } catch (error) {
+        reportError(error)
+    }
+}
+
+const reportError = (error) => {
+    console.log(JSON.stringify(error), 'red')
+    throw new Error('No ethereum object.')
+}
+
 export {
     isWallectConnected,
     connectWallet,
@@ -156,8 +200,8 @@ export {
     getInfo,
     raiseProposal,
     getProposals,
-    // getProposal,
-    // voteOnProposal,
-    // listVoters,
-    // payoutBeneficiary
+    getProposal,
+    voteOnProposal,
+    listVoters,
+    payoutBeneficiary
 }
