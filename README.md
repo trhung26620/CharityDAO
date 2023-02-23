@@ -24,7 +24,7 @@ $ yarn install # or npm install
 `$ truffle migrate`
 Migrate your smart contract each time your restart ganache.
 
-## Step 5. Run the Front End Application
+## Step 4. Run the Front End Application
 `$ yarn start`
 Visit this URL in your browser: http://localhost:3000
 
