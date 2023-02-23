@@ -22,7 +22,6 @@ const Header = () => {
         const root = window.document.documentElement
         root.classList.remove(themeColor)
         root.classList.add(theme)
-        // document.documentElement.classList.toggle('dark', isDarkMode);
         localStorage.setItem('theme', theme)
         setTheme(themeColor)
     }
@@ -38,7 +37,7 @@ const Header = () => {
                         <Link to={"/"} className="flex flex-row justify-start items-center space-x-3"
                             href="#">
                             <FaUserSecret size={25} />
-                            <span className='invisible md:visible'>Domion</span>
+                            <span className='invisible md:visible'>Charity</span>
                         </Link>
                         <div className='flex flex-row justify-center items-center space-x-5'>
                             {darken ?
