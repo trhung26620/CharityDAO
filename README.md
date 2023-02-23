@@ -1,11 +1,10 @@
 
-# Truffle-Tailwind-React Web3 Starter Kit
-Speedily develope your decentralized application with this starter kit for free!
+# Truffle-Tailwind-React Web3
 
 Follow the steps below to download, install, and run this project.
 
 ## Dependencies
-Install these prerequisites to follow along with the tutorial. See free video tutorial or a full explanation of each prerequisite.
+Install these prerequisites.
 - NPM: https://nodejs.org
 - Truffle: https://github.com/trufflesuite/truffle
 - Ganache-CLI: https://docs.nethereum.com/en/latest/ethereum-and-clients/ganache-cli/
@@ -13,21 +12,16 @@ Install these prerequisites to follow along with the tutorial. See free video tu
 
 
 ## Step 1. Clone the project
-`git clone https://github.com/Daltonic/tailwind_truffle_starter_kit <PROJECT NAME>`
+`git clone https://github.com/trhung26620/CharityDAO.git`
 
 ## Step 2. Install dependencies
 ```sh
 $ cd <PROJECT NAME>
 $ yarn install # or npm install
 ```
-## Step 3. Start Ganache-CLI
-Open the terminal and run the command below.
-```sh
-$ ganache-cli
-```
 
-## Step 4. Compile & Deploy Smart Contract
-`$ truffle migrate --reset`
+## Step 3. Compile & Deploy Smart Contract
+`$ truffle migrate`
 Migrate your smart contract each time your restart ganache.
 
 ## Step 5. Run the Front End Application
